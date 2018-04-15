@@ -14,11 +14,22 @@
     "type": "git",
     "url": "git+https://github.com/Potentii/ipc-bridge-nodejs.git"
   },
-  "keywords": ["ipc", "stdio", "stdin", "stdout", "io", "process", "communication"],
+  "keywords": [
+    "ipc",
+    "stdio",
+    "stdin",
+    "stdout",
+    "io",
+    "process",
+    "communication"
+  ],
   "author": "Guilherme Reginaldo Ruella <potentii@gmail.com>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/Potentii/ipc-bridge-nodejs/issues"
   },
-  "homepage": "https://github.com/Potentii/ipc-bridge-nodejs#readme"
+  "homepage": "https://github.com/Potentii/ipc-bridge-nodejs#readme",
+  "dependencies": {
+    "uuid": "^3.2.1"
+  }
 }

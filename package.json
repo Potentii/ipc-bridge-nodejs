@@ -1,0 +1,24 @@
+{
+  "name": "ipc-bridge-nodejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "directories": {
+    "libs": "libs",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Potentii/ipc-bridge-nodejs.git"
+  },
+  "keywords": ["ipc", "stdio", "stdin", "stdout", "io", "process", "communication"],
+  "author": "Guilherme Reginaldo Ruella <potentii@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Potentii/ipc-bridge-nodejs/issues"
+  },
+  "homepage": "https://github.com/Potentii/ipc-bridge-nodejs#readme"
+}

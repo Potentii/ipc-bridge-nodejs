@@ -1,10 +1,10 @@
 const EventEmitter = require('events');
 const { spawn } = require('child_process');
 
+const MESSAGE_CODES = require('../enums/message-codes');
 const InputReader = require('./messages/input-reader');
-
-const PROCESS_ALIVE = '#proc-alive';
-const MESSAGE_DELIMITER = '#msg-end';
+const IncomingMessage = require('../types/incoming-message');
+const IPCError = require('./errors/ipc-error');
 
 module.exports = class IPCChildProcess extends EventEmitter {
    constructor(command_name, args){
@@ -32,8 +32,11 @@ module.exports = class IPCChildProcess extends EventEmitter {
 
          // *Handling the first received data from the sub-process:
          cp.stdout.once('data', data => {
+            // *Getting the first sent message from the spawned process:
+            const message_received = data.toString('utf-8');
+
             // *Checking if the first data sent is the 'alive' signal:
-            if(data.toString('utf-8').includes(PROCESS_ALIVE)){
+            if(message_received.includes(MESSAGE_CODES.PROCESS_ALIVE)){
                // *If it is:
 
                // *Handling the error stream, only if the error callback is valid:
@@ -44,7 +47,7 @@ module.exports = class IPCChildProcess extends EventEmitter {
                // *Handling the message stream, if the message callback is valid:
                if(typeof onMessage === 'function'){
                   // *Initializing the unit that will process the received chunks to dispatch the complete messages:
-                  const reader = new InputReader(MESSAGE_DELIMITER, onMessage);
+                  const reader = new InputReader(MESSAGE_CODES.MESSAGE_DELIMITER, onMessage);
                   // *Dispatching the received messages:
                   cp.stdout.on('data', input => reader.read(input));
                }
@@ -56,26 +59,35 @@ module.exports = class IPCChildProcess extends EventEmitter {
                // *Killing the sub-process:
                this._killProcess(cp);
                // *Rejecting as the sub-process may not be prepared for the IPC bridge:
-               reject(new Error(`Child process could be started, but not sent an 'alive' signal`));
+               reject(new IPCError('ALIVE_SIGNAL', `Child process could be started, but it didn't send the 'alive' signal, instead it sent: "${message_received}"`));
             }
          });
       });
    }
 
 
-
+   /**
+    * Checks if the worker sub-process is started
+    * This will also return true while the sub-process is being started
+    * @return {Boolean} Whether the sub-process is started or not
+    */
    started(){
-      return this._cp;
+      return !!this._cp;
    }
 
 
-   async start(){
-      if(this.started()) return;
+   start(){
+      // *Returning if it have already been started:
+      if(this.started()) return Promise.resolve();
 
-      this._cp = await this._spawnProcess(
+      // *Starting and configuring the sub-process:
+      return this._spawnProcess(
             (err) => this._onReceiveError(err),
             (message) => this._onReceive(message),
-            (code, signal) => this._onFinish(code, signal));
+            (code, signal) => this._onFinish(code, signal))
+
+            // *Assigning the child-process:
+            .then(cp => this._cp = cp);
    }
 
 
@@ -98,18 +110,20 @@ module.exports = class IPCChildProcess extends EventEmitter {
       if(!this.started())
          throw new Error(`Can't send message "${message.id()}": The sub-process haven't yet been started`);
 
-      this._cp.stdin.write((JSON.stringify(message) + '\n' + MESSAGE_DELIMITER));
+      this._cp.stdin.write((JSON.stringify(message) + '\n' + MESSAGE_CODES.MESSAGE_DELIMITER));
    }
 
 
 
    /**
-    * [receive description]
-    * @param  {String} message [description]
-    * @return {[type]}         [description]
+    * Handles incoming messages from the sub-process
+    * Emits 'message' event with the received IncomingMessage response
+    * @param {String} message The received message
     */
    _onReceive(message){
-      this.emit('message', JSON.parse(message));
+      const parsed = JSON.parse(message);
+      const incomming_message = IncomingMessage.from(parsed);
+      this.emit('message', parsed);
    }
 
    /**

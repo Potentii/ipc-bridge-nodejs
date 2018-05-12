@@ -89,15 +89,26 @@ module.exports = class IPCMaster{
          requestBuilder(req);
 
       return await new Promise((resolve, reject) => {
-         const onMessage = message => {
-            if(message.id === message_id){
+
+         /**
+          * Resolves the promise once this request's response is received
+          * @param  {IncomingMessage} res The received response message
+          */
+         const onMessage = res => {
+            // *Checking if the received message id is the same of the request:
+            if(res.id() === req.id()){
+               // *If it is:
+               // *Removing this listener, as it's not needed anymore:
                this._child.removeListener('message', onMessage);
-               resolve(message);
+               // *Resolving the outter promise with the response message:
+               resolve(res);
             }
          };
 
+         // *Starting to handle the received messages from the worker process:
          this._child.on('message', onMessage);
 
+         // * Sending the message to the worker:
          this._child.send(req);
       });
    }

@@ -34,7 +34,7 @@ module.exports = class InputReader {
             this._received_inputs.push(delimiter_match[1]);
 
             // *Getting the complete message by concatenating all the received chunks since the last message:
-            const complete_message = this._received_inputs.join();
+            const complete_message = this._received_inputs.join('');
 
             // *Cleaning the message chunks recipient:
             this._received_inputs = [];

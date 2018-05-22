@@ -96,7 +96,7 @@ module.exports = class IPCMaster{
           */
          const onMessage = res => {
             // *Checking if the received message id is the same of the request:
-            if(res.id() === req.id()){
+            if(res.id === req.id){
                // *If it is:
                // *Removing this listener, as it's not needed anymore:
                this._child.removeListener('message', onMessage);

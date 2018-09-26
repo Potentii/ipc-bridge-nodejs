@@ -26,6 +26,16 @@ module.exports = class IPCChildProcess extends EventEmitter {
          // *Handling when the STDIO channels of the sub-process get closed:
          cp.on('close', (code, signal) => {});
 
+         // *Handling the error stream, only if the error callback is valid:
+         if(typeof onError === 'function')
+            // *Piping the error stream to the error callback:
+            cp.on('error', err => onError(err));
+
+         // *Handling the error stream, only if the error callback is valid:
+         if(typeof onError === 'function')
+            // *Piping the error stream to the error callback:
+            cp.stderr.on('data', data => onError(new Error(data ? data.toString() : null)));
+
          // *Handling when the sub-process got received a kill signal, or have finished by its own:
          if(typeof onFinish === 'function')
             cp.on('exit', (code, signal) => onFinish(code, signal));
@@ -38,12 +48,6 @@ module.exports = class IPCChildProcess extends EventEmitter {
             // *Checking if the first data sent is the 'alive' signal:
             if(message_received.includes(MESSAGE_CODES.PROCESS_ALIVE)){
                // *If it is:
-
-               // *Handling the error stream, only if the error callback is valid:
-               if(typeof onError === 'function')
-                  // *Piping the error stream to the error callback:
-                  cp.on('error', err => onError(err));
-
                // *Handling the message stream, if the message callback is valid:
                if(typeof onMessage === 'function'){
                   // *Initializing the unit that will process the received chunks to dispatch the complete messages:
@@ -132,7 +136,7 @@ module.exports = class IPCChildProcess extends EventEmitter {
     * @return {[type]}     [description]
     */
    _onReceiveError(err){
-      this.emit('error', JSON.parse(err));
+      this.emit('error', err);
    }
 
    /**

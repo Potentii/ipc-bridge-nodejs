@@ -1,6 +1,6 @@
 {
   "name": "ipc-bridge-nodejs",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "main.js",
   "directories": {
@@ -30,6 +30,6 @@
   },
   "homepage": "https://github.com/Potentii/ipc-bridge-nodejs#readme",
   "dependencies": {
-    "uuid": "^3.2.1"
+    "uuid": "3.2.1"
   }
 }

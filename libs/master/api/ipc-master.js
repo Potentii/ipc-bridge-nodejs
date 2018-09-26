@@ -35,7 +35,7 @@ module.exports = class IPCMaster{
     * @return {Promise} Resolves when the sub-process gets ready to listen for
     *                   requests
     */
-   async start(){
+   start(){
       // *Exiting this method if the worker already got started:
       if(this._child.started())
          return;
@@ -46,7 +46,7 @@ module.exports = class IPCMaster{
       });
 
       // *Returning the sub-process start promise:
-      return await this._child.start();
+      return this._child.start();
    }
 
 

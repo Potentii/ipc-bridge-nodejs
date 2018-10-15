@@ -126,8 +126,8 @@ module.exports = class IPCChildProcess extends EventEmitter {
     */
    _onReceive(message){
       const parsed = JSON.parse(message);
-      const incomming_message = IncomingMessage.from(parsed);
-      this.emit('message', parsed);
+      const incoming_message = IncomingMessage.from(parsed);
+      this.emit('message', incoming_message);
    }
 
    /**

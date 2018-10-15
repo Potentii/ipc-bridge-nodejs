@@ -1,13 +1,10 @@
 {
   "name": "ipc-bridge-nodejs",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "main.js",
   "directories": {
     "libs": "libs"
-  },
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",

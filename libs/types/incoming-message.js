@@ -17,6 +17,8 @@ module.exports = class IncomingMessage{
       msg.query = obj.query;
       msg.error = obj.error;
       msg.data = obj.data;
+
+      return msg;
    }
 
 
